@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-import serviceAccount from './scrum-board-4add2-firebase-adminsdk-fbsvc-98535a27fd.json' with { type: 'json' };
+import serviceAccount from './scrum-board-4add2-firebase-adminsdk-fbsvc-5339a460c1.json' with { type: 'json' };
 
 const databaseURL: string | undefined = process.env.PROJECT_URL;
 if (!databaseURL) {
