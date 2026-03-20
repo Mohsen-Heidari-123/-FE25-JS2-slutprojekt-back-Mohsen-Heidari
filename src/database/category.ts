@@ -1,110 +1,91 @@
-import { db } from "../config/firebase.config.ts";
+import { readDB, writeDB } from "../config/firebase.config.ts";
+import { randomUUID } from "crypto";
 
 type Status = "new" | "doing" | "done";
+type Category = "UX" | "Frontend" | "Backend";
 
 interface Assignment {
   id: string;
   title: string;
   description: string;
-  category: "UX" | "Frontend" | "Backend";
+  category: Category;
   status: Status;
   assignedTo: string | null;
   timestamp: string;
 }
 
-
-const add_New_Assignment = async (
+export const add_New_Assignment = async (
   title: string,
   description: string,
-  category: string
+  category: Category
 ) => {
-  try {
-    const newRef = db.ref("assignments").push();
+  const db = readDB();
 
-    const assignment: Assignment = {
-      id: newRef.key as string,
-      title,
-      description,
-      category: category as "UX" | "Frontend" | "Backend",
-      status: "new",
-      assignedTo: null,
-      timestamp: new Date().toISOString(),
-    };
+  const assignment: Assignment = {
+    id: randomUUID(),
+    title,
+    description,
+    category,
+    status: "new",
+    assignedTo: null,
+    timestamp: new Date().toISOString()
+  };
 
-    await newRef.set(assignment);
+  db.assignments.push(assignment);
+  writeDB(db);
 
-    return { status: true, message: "Assignment created", details: assignment };
-  } catch (error) {
-    return { status: false, message: "Failed to create assignment", details: error };
-  }
+  return { status: true, details: assignment };
 };
 
-
-const get_all_assignments = async () => {
-  try {
-    const snapshot = await db.ref("assignments").get();
-    return { status: true, message: "Assignments retrieved", details: snapshot.val() };
-  } catch (error) {
-    return { status: false, message: "Failed to retrieve assignments", details: error };
-  }
+export const get_all_assignments = async () => {
+  const db = readDB();
+  return { status: true, details: db.assignments };
 };
 
+export const assign_Task_To_Member = async (
+  assignmentId: string,
+  memberId: string
+) => {
+  const db = readDB();
 
-const assign_Task_To_Member = async (assignmentId: string, memberId: string) => {
-  try {
-    const assignmentRef = db.ref(`assignments/${assignmentId}`);
-    const memberRef = db.ref(`members/${memberId}`);
+  const assignment = db.assignments.find(a => a.id === assignmentId);
+  const member = db.members.find(m => m.id === memberId);
 
-    const assignmentSnap = await assignmentRef.get();
-    const memberSnap = await memberRef.get();
-
-    if (!assignmentSnap.exists() || !memberSnap.exists()) {
-      return { status: false, message: "Assignment or Member not found" };
-    }
-
-    const assignment = assignmentSnap.val();
-    const member = memberSnap.val();
-
-    if (assignment.category !== member.category) {
-      return { status: false, message: "Category mismatch. Cannot assign." };
-    }
-
-    await assignmentRef.update({
-      assignedTo: memberId,
-      status: "doing",
-    });
-
-    return { status: true, message: "Task assigned successfully" };
-  } catch (error) {
-    return { status: false, message: "Failed to assign task", details: error };
+  if (!assignment || !member) {
+    return { status: false, message: "Not found" };
   }
+
+  if (assignment.category !== member.category) {
+    return { status: false, message: "Category mismatch" };
+  }
+
+  assignment.assignedTo = memberId;
+  assignment.status = "doing";
+
+  writeDB(db);
+
+  return { status: true };
 };
 
-const mark_Task_Done = async (assignmentId: string) => {
-  try {
-    await db.ref(`assignments/${assignmentId}`).update({
-      status: "done",
-    });
+export const mark_Task_Done = async (assignmentId: string) => {
+  const db = readDB();
 
-    return { status: true, message: "Task marked as done" };
-  } catch (error) {
-    return { status: false, message: "Failed to update task", details: error };
-  }
+  const assignment = db.assignments.find(a => a.id === assignmentId);
+
+  if (!assignment) return { status: false };
+
+  assignment.status = "done";
+  writeDB(db);
+
+  return { status: true };
 };
 
-const delete_Task = async (assignmentId: string) => {
-  try {
-    await db.ref(`assignments/${assignmentId}`).remove();
-    return { status: true, message: "Task deleted successfully" };
-  } catch (error) {
-    return { status: false, message: "Failed to delete task", details: error };
-  }
-};
+export const delete_Task = async (assignmentId: string) => {
+  const db = readDB();
 
-export {
-  add_New_Assignment,
-  get_all_assignments,
-  assign_Task_To_Member,
-  mark_Task_Done,
-  delete_Task,
+  db.assignments = db.assignments.filter(a => a.id !== assignmentId);
+
+  writeDB(db);
+
+  return { status: true };
 };
