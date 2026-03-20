@@ -1,27 +1,18 @@
-import admin from 'firebase-admin';
-import dotenv from 'dotenv';
+import fs from "fs";
+import path from "path";
 
+const dbPath = path.resolve("./src/config/database.json");
 
-dotenv.config();
-
-
-import serviceAccount from './scrum-board-4add2-firebase-adminsdk-fbsvc-5339a460c1.json' with { type: 'json' };
-
-const databaseURL: string | undefined = process.env.PROJECT_URL;
-if (!databaseURL) {
-  throw new Error('PROJECT_URL environment variable is not defined');
+export interface Database {
+  members: any[];
+  assignments: any[];
 }
 
+export const readDB = (): Database => {
+  const data = fs.readFileSync(dbPath, "utf8");
+  return JSON.parse(data);
+};
 
-admin.initializeApp({
-  //@ts-ignore
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: databaseURL,
-});
-
-
-const db: admin.database.Database = admin.database();
-const auth: admin.auth.Auth = admin.auth();
-
-
-export { db, auth };
+export const writeDB = (data: Database) => {
+  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+};
