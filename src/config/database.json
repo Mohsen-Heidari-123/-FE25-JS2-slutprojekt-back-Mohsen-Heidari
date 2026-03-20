@@ -1,0 +1,90 @@
+{
+  "members": [
+    {
+      "id": "m1",
+      "name": "Alice",
+      "category": "Frontend"
+    },
+    {
+      "id": "m2",
+      "name": "Bob",
+      "category": "Backend"
+    },
+    {
+      "id": "m3",
+      "name": "Charlie",
+      "category": "UX"
+    },
+    {
+      "id": "m4",
+      "name": "Diana",
+      "category": "Frontend"
+    },
+    {
+      "id": "m5",
+      "name": "Elias",
+      "category": "Backend"
+    },
+    {
+      "id": "m6",
+      "name": "Fatima",
+      "category": "UX"
+    }
+  ],
+  "assignments": [
+    {
+      "id": "a1",
+      "title": "Create login page",
+      "description": "Build UI for login",
+      "category": "Frontend",
+      "status": "doing",
+      "assignedTo": "m1",
+      "timestamp": "2026-03-20T10:00:00.000Z"
+    },
+    {
+      "id": "a2",
+      "title": "API authentication",
+      "description": "Implement JWT auth",
+      "category": "Backend",
+      "status": "doing",
+      "assignedTo": "m2",
+      "timestamp": "2026-03-20T10:10:00.000Z"
+    },
+    {
+      "id": "a3",
+      "title": "Design homepage",
+      "description": "Wireframe and layout",
+      "category": "UX",
+      "status": "done",
+      "assignedTo": "m3",
+      "timestamp": "2026-03-20T10:20:00.000Z"
+    },
+    {
+      "id": "a4",
+      "title": "Navbar component",
+      "description": "Reusable navigation bar",
+      "category": "Frontend",
+      "status": "new",
+      "assignedTo": null,
+      "timestamp": "2026-03-20T10:30:00.000Z"
+    },
+    {
+      "id": "a5",
+      "title": "Database schema",
+      "description": "Design MongoDB schema",
+      "category": "Backend",
+      "status": "doing",
+      "assignedTo": "m5",
+      "timestamp": "2026-03-20T10:40:00.000Z"
+    },
+    {
+      "id": "a6",
+      "title": "User testing",
+      "description": "Collect feedback",
+      "category": "UX",
+      "status": "new",
+      "assignedTo": null,
+      "timestamp": "2026-03-20T10:50:00.000Z"
+    }
+  ]
+}
