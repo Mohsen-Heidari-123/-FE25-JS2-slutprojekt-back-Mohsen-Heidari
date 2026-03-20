@@ -1,4 +1,5 @@
-import { db } from "../config/firebase.config.ts";
+import { readDB, writeDB } from "../config/firebase.config.ts";
+import { randomUUID } from "crypto";
 
 type Category = "UX" | "Frontend" | "Backend";
 
@@ -8,128 +9,83 @@ interface Member {
   category: Category;
 }
 
+export const add_New_Member = async (name: string, category: Category) => {
+  const db = readDB();
 
-const add_New_Member = async (name: string, category: Category) => {
-  try {
-    const newRef = db.ref("members").push();
+  const member: Member = {
+    id: randomUUID(),
+    name,
+    category
+  };
 
-    const member: Member = {
-      id: newRef.key as string,
-      name,
-      category,
-    };
+  db.members.push(member);
+  writeDB(db);
 
-    await newRef.set(member);
-
-    return { status: true, message: "Member created", details: member };
-  } catch (error) {
-    return { status: false, message: "Failed to create member", details: error };
-  }
+  return { status: true, details: member };
 };
 
-
-const get_all_member = async () => {
-  try {
-    const snapshot = await db.ref("members").get();
-    return { status: true, details: snapshot.val() };
-  } catch (error) {
-    return { status: false, message: "Failed to retrieve members", details: error };
-  }
+export const get_all_member = async () => {
+  const db = readDB();
+  return { status: true, details: db.members };
 };
 
+export const get_single_member = async (id: string) => {
+  const db = readDB();
 
-const get_single_member = async (id: string) => {
-  try {
-    const snapshot = await db.ref(`members/${id}`).get();
+  const member = db.members.find(m => m.id === id);
 
-    if (!snapshot.exists()) {
-      return { status: false, message: "Member not found" };
-    }
-
-    return { status: true, details: snapshot.val() };
-  } catch (error) {
-    return { status: false, message: "Failed to retrieve member", details: error };
+  if (!member) {
+    return { status: false, message: "Member not found" };
   }
+
+  return { status: true, details: member };
 };
 
-const update_member = async (
+export const update_member = async (
   id: string,
   name?: string,
   category?: Category
 ) => {
-  try {
-    const snapshot = await db.ref(`members/${id}`).get();
+  const db = readDB();
 
-    if (!snapshot.exists()) {
-      return { status: false, message: "Member not found" };
-    }
+  const member = db.members.find(m => m.id === id);
 
-    const updateData: { name?: string; category?: Category } = {};
-
-    if (name !== undefined) {
-      updateData.name = name;
-    }
-
-    if (category !== undefined) {
-      updateData.category = category;
-    }
-
-    await db.ref(`members/${id}`).update(updateData);
-
-    return { status: true, message: "Member updated successfully" };
-
-  } catch (error) {
-    return {
-      status: false,
-      message: "Failed to update member",
-      details: error
-    };
+  if (!member) {
+    return { status: false, message: "Member not found" };
   }
+
+  if (name) member.name = name;
+  if (category) member.category = category;
+
+  writeDB(db);
+
+  return { status: true };
 };
 
-const delete_member = async (id: string) => {
-  try {
-    await db.ref(`members/${id}`).remove();
-    return { status: true, message: "Member deleted successfully" };
-  } catch (error) {
-    return { status: false, message: "Failed to delete member", details: error };
-  }
+export const delete_member = async (id: string) => {
+  const db = readDB();
+
+  db.members = db.members.filter(m => m.id !== id);
+
+  writeDB(db);
+
+  return { status: true };
 };
 
+export const get_members_by_category = async (category: Category) => {
+  const db = readDB();
 
-const get_members_by_category = async (category: Category) => {
-  try {
-    const snapshot = await db.ref("members")
-      .orderByChild("category")
-      .equalTo(category)
-      .get();
+  const members = db.members.filter(m => m.category === category);
 
-    return { status: true, details: snapshot.val() };
-  } catch (error) {
-    return { status: false, message: "Failed to filter members", details: error };
-  }
+  return { status: true, details: members };
 };
 
+export const get_member_assignments = async (memberId: string) => {
+  const db = readDB();
 
-const get_member_assignments = async (memberId: string) => {
-  try {
-    const snapshot = await db.ref("assignments")
-      .orderByChild("assignedTo")
-      .equalTo(memberId)
-      .get();
+  const assignments = db.assignments.filter(
+    a => a.assignedTo === memberId
+  );
 
-    return { status: true, details: snapshot.val() };
-  } catch (error) {
-    return { status: false, message: "Failed to get assignments", details: error };
-  }
-};
-
-export {
-  add_New_Member,
-  get_all_member,
-  get_single_member,
-  update_member,
-  delete_member,
-  get_members_by_category,
-  get_member_assignments
+  return { status: true, details: assignments };
 };
