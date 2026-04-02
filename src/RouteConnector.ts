@@ -1,7 +1,7 @@
 
 import express from 'express';
-import { membersRoutes } from './routes/membersRoutes.ts'; 
-import { TaskManagement } from './routes/taskRouter.ts'; 
+import { membersRoutes } from './routes/membersRoutes'; 
+import { TaskManagement } from './routes/taskRouter'; 
 
 const RoutesConnector = express.Router(); 
 

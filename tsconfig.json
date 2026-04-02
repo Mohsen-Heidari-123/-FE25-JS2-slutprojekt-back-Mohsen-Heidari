@@ -1,28 +1,28 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "Node + TypeScript backend",
-  "main": "dist/app.js",
-  "scripts": {
-    "dev": "nodemon --exec ts-node src/app.ts",
-    "build": "tsc",
-    "start": "node dist/app.js",
-    "clean": "rimraf dist"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "compilerOptions": {
+    /* Project structure */
+    "rootDir": "./src",
+    "outDir": "./dist",
 
-  "dependencies": {
-    "express": "^4.19.2"
+    /* Module & target */
+    "module": "commonjs",
+    "target": "es2016",
+
+    /* Interop */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Strictness */
+    "strict": true,
+    "skipLibCheck": true,
+
+    /* JSON support (important for your config/database.json) */
+    "resolveJsonModule": true,
+
+    /* Source maps (optional but good for debugging) */
+    "sourceMap": true
   },
 
-  "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.11.30",
-    "nodemon": "^3.1.0",
-    "rimraf": "^5.0.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.0"
-  }
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,4 +1,4 @@
-import { readDB, writeDB } from "../config/firebase.config.ts";
+import { readDB, writeDB } from "../config/firebase.config";
 import { randomUUID } from "crypto";
 
 type Status = "new" | "doing" | "done";

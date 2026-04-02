@@ -10,7 +10,7 @@ import {
   delete_member,
   get_members_by_category,
   get_member_assignments
-} from "../database/member.ts";
+} from "../database/member";
 
 const membersRoutes = express.Router();
 
