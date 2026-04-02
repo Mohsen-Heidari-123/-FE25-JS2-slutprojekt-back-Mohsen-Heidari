@@ -11,10 +11,10 @@ app.use(cors());
 app.use(express.json());
 app.use(RoutesConnector);
 
-app.use(express.static(path.join(__dirname, "../src/public/dist")));
+app.use(express.static(path.join(__dirname, "../src/public/")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../src/public/dist/index.html"));
+  res.sendFile(path.join(__dirname, "../src/public/index.html"));
 });
 
 app.listen(port, () => {
